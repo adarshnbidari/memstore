@@ -11,7 +11,7 @@ import (
 	"github.com/techslaim/memstore/components/commands"
 	"github.com/techslaim/memstore/components/utils/closeup"
 	"github.com/techslaim/memstore/components/utils/startup"
-	storeformat "github.com/techslaim/memstore/components/utils/storeformat"
+	"github.com/techslaim/memstore/components/utils/storeformat"
 )
 
 var memstore storeformat.Store = storeformat.Store{
@@ -71,13 +71,17 @@ func cleanupOperation() {
 
 	signal.Notify(stopSignal, os.Interrupt, os.Kill, syscall.SIGINT, syscall.SIGTERM)
 
-	<-stopSignal
+	go func() {
 
-	signal.Stop(stopSignal)
+		<-stopSignal
 
-	cleanup()
+		signal.Stop(stopSignal)
 
-	os.Exit(0)
+		cleanup()
+
+		os.Exit(0)
+
+	}()
 
 }
 
